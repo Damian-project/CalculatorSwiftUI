@@ -41,7 +41,7 @@ enum CalcButton: String {
 }
 
 enum Operation {
-    case add, substract, multiply, divide, none
+    case add, substract, multiply, devide, none
 }
 
 struct ContentView: View {
@@ -68,7 +68,6 @@ struct ContentView: View {
                 HStack{
                     Spacer()
                     Text(value)
-                        .bold()
                         .font(.system(size: 80))
                         .foregroundColor(.white)
                 }
@@ -91,9 +90,9 @@ struct ContentView: View {
                                 })
                             }
                         }
-                        .padding(.bottom, 3)
-                }
-            }
+                        .padding(.bottom, 5)
+                    }
+            }.padding(.bottom, 5)
         }
     }
     
@@ -101,29 +100,26 @@ struct ContentView: View {
         switch button {
         case .add, .substract, .multiply, .devide, .equal:
             if button == .add {
-                self.currentOperation = .add
-                self.runningNumber = Int(self.value) ?? 0
+                assignValue(.add)
             }
             else if button == .substract {
-                self.currentOperation = .substract
-                self.runningNumber = Int(self.value) ?? 0
+                assignValue(.substract)
             }
             else if button == .multiply {
-                self.currentOperation = .multiply
-                self.runningNumber = Int(self.value) ?? 0
+                assignValue(.multiply)
             }
             else if button == .devide {
-                self.currentOperation = .divide
-                self.runningNumber = Int(self.value) ?? 0
+                assignValue(.devide)
             }
             else if button == .equal {
                 let runningValue = self.runningNumber
                 let currentNumber = Int(self.value) ?? 0
+                
                 switch currentOperation {
                 case .add: self.value = "\(runningValue + currentNumber)"
                 case .substract: self.value = "\(runningValue - currentNumber)"
                 case .multiply: self.value = "\(runningValue * currentNumber)"
-                case .divide: self.value = "\(runningValue / currentNumber)"
+                case .devide: self.value = "\(runningValue / currentNumber)"
                 case .none: break
                 }
             }
@@ -131,6 +127,7 @@ struct ContentView: View {
             if button != .equal {
                 value = "0"
             }
+            
         case .clear:
             self.value = "0"
         case .decimal, .negative, .percent:
@@ -144,12 +141,16 @@ struct ContentView: View {
             }
         }
     }
+    func assignValue(_ operation: Operation) {
+        currentOperation = operation
+        self.runningNumber = Int(self.value) ?? 0
+    }
     
     func buttonWidth(item: CalcButton) -> CGFloat {
         if item == .zero {
-            return ((UIScreen.main.bounds.width - (4*12)) / 4 ) * 2
+            return ((UIScreen.main.bounds.width - (4 * 12)) / 4 ) * 2
         }
-        return (UIScreen.main.bounds.width - (5*12)) / 4
+        return (UIScreen.main.bounds.width - (5 * 12)) / 4
     }
     
     func buttonHeight() -> CGFloat {
