@@ -40,7 +40,15 @@ enum CalcButton: String {
     }
 }
 
+enum Operation {
+    case add, substract, multiply, divide, none
+}
+
 struct ContentView: View {
+    
+    @State var value = "0"
+    @State var runningNumber = 0
+    @State var currentOperation: Operation = .none
     
     let buttons: [[CalcButton]] = [
         [.clear, .negative, .percent, .devide],
@@ -59,9 +67,9 @@ struct ContentView: View {
                 Spacer()
                 HStack{
                     Spacer()
-                    Text("0")
+                    Text(value)
                         .bold()
-                        .font(.system(size: 64))
+                        .font(.system(size: 80))
                         .foregroundColor(.white)
                 }
                 .padding()
@@ -70,11 +78,10 @@ struct ContentView: View {
                         HStack(spacing: 12) {
                             ForEach(row, id: \.self) { item in
                                 Button(action: {
-                                    
+                                    self.didTap(button: item)
                                 }, label: {
                                     Text(item.rawValue)
-                                        .bold()
-                                        .font(.system(size: 32))
+                                        .font(.system(size: 42))
                                         .frame(
                                             width: self.buttonWidth(item: item),
                                             height: self.buttonHeight())
@@ -90,7 +97,58 @@ struct ContentView: View {
         }
     }
     
+    func didTap(button: CalcButton) {
+        switch button {
+        case .add, .substract, .multiply, .devide, .equal:
+            if button == .add {
+                self.currentOperation = .add
+                self.runningNumber = Int(self.value) ?? 0
+            }
+            else if button == .substract {
+                self.currentOperation = .substract
+                self.runningNumber = Int(self.value) ?? 0
+            }
+            else if button == .multiply {
+                self.currentOperation = .multiply
+                self.runningNumber = Int(self.value) ?? 0
+            }
+            else if button == .devide {
+                self.currentOperation = .divide
+                self.runningNumber = Int(self.value) ?? 0
+            }
+            else if button == .equal {
+                let runningValue = self.runningNumber
+                let currentNumber = Int(self.value) ?? 0
+                switch currentOperation {
+                case .add: self.value = "\(runningValue + currentNumber)"
+                case .substract: self.value = "\(runningValue - currentNumber)"
+                case .multiply: self.value = "\(runningValue * currentNumber)"
+                case .divide: self.value = "\(runningValue / currentNumber)"
+                case .none: break
+                }
+            }
+            
+            if button != .equal {
+                value = "0"
+            }
+        case .clear:
+            self.value = "0"
+        case .decimal, .negative, .percent:
+            break
+        default:
+            let number = button.rawValue
+            if self.value == "0" {
+                value = number
+            } else {
+                self.value = "\(self.value)\(number)"
+            }
+        }
+    }
+    
     func buttonWidth(item: CalcButton) -> CGFloat {
+        if item == .zero {
+            return ((UIScreen.main.bounds.width - (4*12)) / 4 ) * 2
+        }
         return (UIScreen.main.bounds.width - (5*12)) / 4
     }
     
